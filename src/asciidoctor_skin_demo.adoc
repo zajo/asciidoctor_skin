@@ -8,6 +8,9 @@ Asciidoctor custom skin with dynamic dark/light switching
 ifndef::backend-pdf[]
 :toc: left
 :toc-title: pass:[<div style="float:right"><input width="32" height="32" type="image" alt="Skin" src="./skin.png" onclick="this.blur();switch_style();return false;"/></div>]
+
+[.text-right]
+https://github.com/zajo/asciidoctor_skin[GitHub] | link:./asciidoctor_skin.pdf[PDF]
 endif::[]
 
 == Introduction
@@ -40,7 +43,11 @@ This is actually very simple to do with Javascript. Once I created the two `.css
 :stylesheet: zajo-dark.css
 ----
 
-Adding the pass:[<input width="32" height="32" type="image" alt="Skin" src="./skin.png" onclick="this.blur();switch_style();return false;"/>] button to the Table of Contents requires a tricky hack. By default, Asciidoctor will use "Table of Contents" as the default title for the table of contents, but it allows us to customize it:
+Adding the
+ifndef::backend-pdf[]
+pass:[<input width="32" height="32" type="image" alt="Skin" src="./skin.png" onclick="this.blur();switch_style();return false;"/>]
+endif::[]
+button to the Table of Contents requires a tricky hack. By default, Asciidoctor will use "Table of Contents" as the default title for the table of contents, but it allows us to customize it:
 
 [source]
 ----
