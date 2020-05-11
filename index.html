@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<meta name="author" content="Asciidoctor custom skin with dynamic dark/light switching">
+<title>Skin Demo</title>
+<link rel="stylesheet" href="./zajo-dark.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="./zajo-light.css" disabled=true>
+<script>
+function switch_style()
+{
+	var i, tag;
+	for( i=0, tag=document.getElementsByTagName("link"); i<tag.length; i++ )
+		if( tag[i].rel.indexOf("stylesheet")!=-1 && tag[i].href.includes("zajo-") )
+			tag[i].disabled = !tag[i].disabled;
+}
+</script>
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Skin Demo</h1>
+<div class="details">
+<span id="author" class="author">Asciidoctor custom skin with dynamic dark/light switching</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle"><div style="float:right"><input width="32" height="32" type="image" alt="Skin" src="./skin.png" onclick="this.blur();switch_style();return false;"/></div></div>
+<ul class="sectlevel1">
+<li><a href="#_introduction">Introduction</a></li>
+<li><a href="#_customizing_the_css">Customizing the CSS</a></li>
+<li><a href="#_dynamic_switching_between_dark_and_light_mode">Dynamic Switching between Dark and Light Mode</a></li>
+<li><a href="#_using_docinfo_html_to_inject_javascript">Using <code>docinfo.html</code> to Inject Javascript</a></li>
+<li><a href="#_building">Building</a></li>
+<li><a href="#_thats_all">That&#8217;s All!</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is a simple project that builds on the default <a href="https://asciidoctor.org/">Asciidoctor</a> <code>.css</code> file, appending select customizations at the very end.</p>
+</div>
+<div class="paragraph">
+<p>It also adds a button to the Table of Contents for dynamic switching between Light and Dark mode, using Javascript.</p>
+</div>
+<div class="paragraph">
+<p>To see this skin in action with a lot more text, see the documentation for <a href="https://zajo.github.io/leaf/">LEAF</a>, a lightweight error-handling library for C++11.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_customizing_the_css">Customizing the CSS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The first thing I wanted to do after extracting the default Asciidoctor <code>.css</code> was change the fonts. This requires a line to be inserted near the very top of the file, in this case:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>@import "https://fonts.googleapis.com/css?family=Anonymous+Pro|Istok+Web|Quicksand|Poiret+One";</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This imports the four Google fonts used: Anonymous Pro, Istok Web, Quicksand and Poiret One.</p>
+</div>
+<div class="paragraph">
+<p>Next I proceeded with hacking the CSS itself, but rather than just making random changes throughout the text, I appended all the changes at the very end. This is possible, because anything set in CSS can be overridden by targeting the same class or element later on.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dynamic_switching_between_dark_and_light_mode">Dynamic Switching between Dark and Light Mode</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is actually very simple to do with Javascript. Once I created the two <code>.css</code> files, <a href="./zajo-dark.css"><code>zajo-dark.css</code></a> and <a href="./zajo-dark.css"><code>zajo-light.css</code></a>, I used the <code>:stylesheet:</code> attribute at the top of the <code>.adoc</code> file to specify that I want <code>zajo-dark.css</code> used by default:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>:stylesheet: zajo-dark.css</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Adding the <input width="32" height="32" type="image" alt="Skin" src="./skin.png" onclick="this.blur();switch_style();return false;"/> button to the Table of Contents requires a tricky hack. By default, Asciidoctor will use "Table of Contents" as the default title for the table of contents, but it allows us to customize it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>:toc-title: My Table of Contents</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I have always thought that this is redundant, and used to turn it off like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>:toc-title:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It occurred to me that I can use <code>:toc-title:</code> to inject the HTML I need to put up the button. This can be done like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>ifndef::backend-pdf[] <i class="conum" data-value="1"></i><b>(1)</b>
+:toc-title: pass:[&lt;div style="float:right"&gt;&lt;input width="32" height="32" type="image" alt="Skin" src="./skin.png" onclick="this.blur();switch_style();return false;"/&gt;&lt;/div&gt;]
+endif::[] <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We use <code>ifndef</code> in order to prevent the HTML being injected when Asciidoctor is producing a PDF.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>pass</code> will pass everything between the <code>[</code> and <code>]</code> and inject it directly in the generated HTML output. We have a floating <code>div</code>, and a simple script that calls the <code>switch_style</code> function (see below).</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_docinfo_html_to_inject_javascript">Using <code>docinfo.html</code> to Inject Javascript</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Asciidoctor it is very easy to add anything to the HEAD section of the generated HTML file. All you have to do is create a file called <code>docinfo.html</code>. In this case, the contents of this file is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>&lt;link rel="stylesheet" href="./zajo-light.css" disabled=true&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+&lt;script&gt;
+function switch_style() <i class="conum" data-value="2"></i><b>(2)</b>
+{
+	var i, tag;
+	for( i=0, tag=document.getElementsByTagName("link"); i&lt;tag.length; i++ )
+		if( tag[i].rel.indexOf("stylesheet")!=-1 &amp;&amp; tag[i].href.includes("zajo-") ) <i class="conum" data-value="3"></i><b>(3)</b>
+			tag[i].disabled = !tag[i].disabled; <i class="conum" data-value="4"></i><b>(4)</b>
+}
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add the <code>zajo-light.css</code> as a link. Note the <code>disabled=true</code>, this ensures that the <code>zajo-dark.css</code> will be used by default (it is introduced by the <code>:stylesheet:</code> attribute, see above).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This is the Javascript function invoked by the injected button (see the previous section).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Enumerate all CSS links in the HTML file, and if we see one with a name that starts with <code>zajo-</code>&#8230;&#8203;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>&#8230;&#8203;toggle its <code>disabled</code> state.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_building">Building</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I&#8217;ve included a simple Makefile to generate the HTML using Asciidoctor and to copy the necessary files in the <code>out</code> directory (which then can be published). Of course, you must have <code>asciidoctor</code> installed on your system.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_thats_all">That&#8217;s All!</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2020-05-11 12:09:34 -0700
+</div>
+</div>
+</body>
+</html>
